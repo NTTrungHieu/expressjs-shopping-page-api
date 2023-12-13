@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose"); // Erase if already required
-
+const SALT_WORK_FACTOR = 10;
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema(
   {
@@ -40,6 +40,7 @@ var userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    RefreshToken: String,
   },
   {
     timestamps: true,
@@ -47,7 +48,8 @@ var userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  const salt = await bcrypt.genSaltSync(10);
+  if (!this.isModified("Password")) return next();
+  const salt = await bcrypt.genSaltSync(SALT_WORK_FACTOR);
   this.Password = await bcrypt.hash(this.Password, salt);
 });
 
