@@ -8,21 +8,21 @@ var productSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    slug: {
+    Slug: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
     },
-    description: {
+    Description: {
       type: String,
       required: true,
     },
-    price: {
+    Price: {
       type: Number,
       required: true,
     },
-    category: {
+    Category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
     },
@@ -53,5 +53,7 @@ var productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const Product = mongoose.model("Product", productSchema);
+
 //Export the model
-module.exports = mongoose.model("Product", productSchema);
+module.exports = Product;
