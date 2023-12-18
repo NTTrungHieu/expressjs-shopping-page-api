@@ -51,6 +51,16 @@ var userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.virtual('FullName').
+  get(function() { return `${this.FirstName} ${this.LastName}`; }).
+  set(function(v) {
+    // `v` is the value being set, so use the value to set
+    // `FirstName` and `LastName`.
+    const FirstName = v.substring(0, v.indexOf(' '));
+    const LastName = v.substring(v.indexOf(' ') + 1);
+    this.set({ FirstName, LastName });
+  });
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("Password")) return next();
   const salt = await bcrypt.genSaltSync(SALT_WORK_FACTOR);
