@@ -26,6 +26,9 @@ const getBlog = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+  const userName = "FirstName LastName"
+  await blog.populate({path: "Likes", select: userName})
+  await blog.populate({path: "Dislikes", select: userName});
   res.json({ blog });
 });
 
@@ -40,4 +43,66 @@ const removeBlog = asyncHandler(async (req, res) => {
   res.json({ removedBlog });
 });
 
-module.exports = { createBlog, updateBlog, getBlog, getAllBlogs, removeBlog };
+const likeBlog = asyncHandler(async (req, res) => {
+  const blogId = validateMongoId(req.params.blogId);
+  const blog = await Blog.findById(blogId);
+  const userId = req.user._id;
+  let IsLiked = await blog.Likes.find(
+    (id) => id.toString() === userId.toString()
+  );
+  let IsDisliked = await blog.Dislikes.find(
+    (id) => id.toString() === userId.toString()
+  );
+  const updatedObj = {};
+  if (IsLiked) {
+    (IsLiked = false), (updatedObj.$pull = { Likes: userId });
+  } else {
+    IsLiked = true;
+    if (IsDisliked) {
+      updatedObj.$pull = { Dislikes: userId };
+    }
+    updatedObj.$push = { Likes: userId };
+  }
+  IsDisliked = false;
+  const updatedBlog = await Blog.findByIdAndUpdate(blogId, updatedObj, {
+    new: true,
+  });
+  res.json({ ...updatedBlog._doc, IsLiked, IsDisliked });
+});
+
+const dislikeBlog = asyncHandler(async (req, res) => {
+  const blogId = validateMongoId(req.params.blogId);
+  const blog = await Blog.findById(blogId);
+  const userId = req.user._id;
+  let IsLiked = await blog.Likes.find(
+    (id) => id.toString() === userId.toString()
+  );
+  let IsDisliked = await blog.Dislikes.find(
+    (id) => id.toString() === userId.toString()
+  );
+  const updatedObj = {};
+  if (IsDisliked) {
+    (IsDisliked = false), (updatedObj.$pull = { Dislikes: userId });
+  } else {
+    IsDisliked = true;
+    if (IsLiked) {
+      updatedObj.$pull = { Likes: userId };
+    }
+    updatedObj.$push = { Dislikes: userId };
+  }
+  IsLiked = false;
+  const updatedBlog = await Blog.findByIdAndUpdate(blogId, updatedObj, {
+    new: true,
+  });
+  res.json({ ...updatedBlog._doc, IsLiked, IsDisliked });
+});
+
+module.exports = {
+  createBlog,
+  updateBlog,
+  getBlog,
+  getAllBlogs,
+  removeBlog,
+  likeBlog,
+  dislikeBlog,
+};
