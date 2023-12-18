@@ -19,14 +19,18 @@ var blogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    Likes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    }],
-    Dislikes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    }],
+    Likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    Dislikes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     Image: {
       type: String,
       default:
@@ -36,6 +40,7 @@ var blogSchema = new mongoose.Schema(
       type: String,
       default: "Admin",
     },
+    Images: [],
   },
   {
     ToJSON: {
@@ -51,4 +56,4 @@ var blogSchema = new mongoose.Schema(
 const Blog = mongoose.model("Blog", blogSchema);
 
 //Export the model
-module.exports = Blog
+module.exports = Blog;

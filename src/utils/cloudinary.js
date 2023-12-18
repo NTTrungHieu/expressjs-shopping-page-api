@@ -6,10 +6,10 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-const cloudinaryUploadImage = async (file) => {
+const cloudinaryUploadImage = async (filePath) => {
   return new Promise((resolve) => {
     cloudinary.v2.uploader.upload(
-      file,
+      filePath,
       { public_id: "olympic_flag" },
       function (error, result) {
         resolve(

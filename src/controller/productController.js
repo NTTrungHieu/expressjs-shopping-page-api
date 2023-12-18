@@ -3,6 +3,8 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const { validateMongoId } = require("../utils/validate");
 const User = require("../models/userModel");
+const cloudinaryUploadImage = require("../utils/cloudinary");
+const fs = require("fs");
 
 const createProduct = asyncHandler(async (req, res) => {
   if (req.body?.Title) {
@@ -101,11 +103,18 @@ const rateProduct = asyncHandler(async (req, res) => {
       isRated.Comment = comment;
       // await isRated.save();
     } else {
-      await product.Ratings.push({ Star: star, PostedBy: userId, Comment: comment });
+      await product.Ratings.push({
+        Star: star,
+        PostedBy: userId,
+        Comment: comment,
+      });
     }
-    const sumRating = product.Ratings.reduce((total, cur) => total + cur.Star, 0);
+    const sumRating = product.Ratings.reduce(
+      (total, cur) => total + cur.Star,
+      0
+    );
     const totalRating = product.Ratings.length;
-    const averageRating = Math.round(sumRating*100 / totalRating)/100;
+    const averageRating = Math.round((sumRating * 100) / totalRating) / 100;
     product.AverageRating = averageRating;
     product.save();
     isRated = true;
@@ -113,9 +122,21 @@ const rateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-const uploadImages = asyncHandler(async(req,res)=>{
-  console.log(req.files)
-})
+const uploadImages = asyncHandler(async (req, res) => {
+  const id = validateMongoId(req.params.id);
+  const urls = [];
+  for (const file of req.files) {
+    const newPath = await cloudinaryUploadImage(file.path, "images");
+    urls.push(newPath);
+    fs.unlinkSync(file.path);
+  }
+  const product = Product.findByIdAndUpdate(
+    id,
+    { Images: urls },
+    { new: true }
+  );
+  res.json(product);
+});
 
 module.exports = {
   createProduct,
@@ -125,5 +146,5 @@ module.exports = {
   removeProduct,
   addToWishList,
   rateProduct,
-  uploadImages
+  uploadImages,
 };
