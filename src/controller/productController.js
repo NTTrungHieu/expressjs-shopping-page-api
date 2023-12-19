@@ -130,12 +130,10 @@ const uploadImages = asyncHandler(async (req, res) => {
     urls.push(newPath);
     fs.unlinkSync(file.path);
   }
-  const product = Product.findByIdAndUpdate(
-    id,
-    { Images: urls },
-    { new: true }
-  );
-  res.json(product);
+  const product = await Product.findById(id);
+  product.Images.push(...urls);
+  await product.save();
+  return res.json(product);
 });
 
 module.exports = {

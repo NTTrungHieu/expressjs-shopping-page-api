@@ -1,4 +1,4 @@
-const cloudinary = "cloudinary";
+const cloudinary = require("cloudinary");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -10,7 +10,6 @@ const cloudinaryUploadImage = async (filePath) => {
   return new Promise((resolve) => {
     cloudinary.v2.uploader.upload(
       filePath,
-      { public_id: "olympic_flag" },
       function (error, result) {
         resolve(
           {
