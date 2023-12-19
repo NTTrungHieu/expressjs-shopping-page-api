@@ -35,11 +35,12 @@ var productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    Images: [],
-    Color: {
-      type: String,
-      required: true,
-    },
+    Images: [{
+      Url: String,
+      PublicId: String,
+    }],
+    Color: [],
+    Tags: String,
     Ratings: [
       {
         Star: Number,

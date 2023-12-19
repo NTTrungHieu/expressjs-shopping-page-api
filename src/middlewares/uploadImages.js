@@ -9,7 +9,21 @@ const multerStorage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ".jpeg");
+    const fileName = file.fieldname + "-" + uniqueSuffix + ".jpeg"
+    cb(null, fileName);
+    req.on('aborted', () => {
+      const fullFilePath = path.join(__dirname, "../../public/images", fileName);
+      file.stream.on('end', () => {
+        fs.unlink(fullFilePath, (err) => {
+          console.log(fullFilePath);
+          if (err) {
+            throw err;
+          }
+        });
+      });
+      file.stream.emit('end');
+    })
+
   },
 });
 

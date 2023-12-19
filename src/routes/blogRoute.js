@@ -9,6 +9,7 @@ const {
   likeBlog,
   dislikeBlog,
   uploadImages,
+  deleteImages,
 } = require("../controller/blogController");
 const { uploadPhoto, resizeBlogImage } = require("../middlewares/uploadImages");
 const router = express.Router();
@@ -29,6 +30,7 @@ router.put(
   uploadImages
 );
 router.put("/:id", updateBlog);
+router.delete("/delete-images/:id", deleteImages);
 router.delete("/:id", removeBlog);
 
 module.exports = router;

@@ -24,7 +24,7 @@ const createOrder = asyncHandler(async (req, res) => {
     OrderBy: id,
     OrderStatus: "Cash on Delivery",
   }).save();
-  const updateObj = cart.Products.map((item) => {
+  const updateArr = cart.Products.map((item) => {
     return {
       updateOne: {
         filter: { _id: item.Product },
@@ -32,7 +32,7 @@ const createOrder = asyncHandler(async (req, res) => {
       },
     };
   });
-  const updatedProduct = await Product.bulkWrite(updateObj);
+  const updatedProduct = await Product.bulkWrite(updateArr);
   res.json({ newOrder });
 });
 

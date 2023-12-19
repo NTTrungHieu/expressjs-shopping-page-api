@@ -3,7 +3,10 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const { validateMongoId } = require("../utils/validate");
 const User = require("../models/userModel");
-const cloudinaryUploadImage = require("../utils/cloudinary");
+const {
+  cloudinaryUploadImage,
+  cloudinaryDeleteImage,
+} = require("../utils/cloudinary");
 const fs = require("fs");
 
 const createProduct = asyncHandler(async (req, res) => {
@@ -126,14 +129,30 @@ const uploadImages = asyncHandler(async (req, res) => {
   const id = validateMongoId(req.params.id);
   const urls = [];
   for (const file of req.files) {
-    const newPath = await cloudinaryUploadImage(file.path, "images");
-    urls.push(newPath);
-    fs.unlinkSync(file.path);
+    const newPath = await cloudinaryUploadImage(file.path, "products");
+    urls.push({ Url: newPath.url, PublicId: newPath.public_id });
   }
   const product = await Product.findById(id);
   product.Images.push(...urls);
   await product.save();
   return res.json(product);
+});
+
+const deleteImages = asyncHandler(async (req, res) => {
+  const publicIdList = req.body.Images;
+  const id = validateMongoId(req.params.id);
+  const updateArr = [];
+  for (const public_id of publicIdList) {
+    await cloudinaryDeleteImage(public_id);
+    updateArr.push({
+      updateOne: {
+        filter: { _id: id },
+        update: { $pull: { Images: { PublicId: public_id } } },
+      },
+    });
+  }
+  const updatedProduct = await Product.bulkWrite(updateArr);
+  return res.json(updatedProduct);
 });
 
 module.exports = {
@@ -144,5 +163,6 @@ module.exports = {
   removeProduct,
   addToWishList,
   rateProduct,
-  uploadImages
+  uploadImages,
+  deleteImages,
 };
