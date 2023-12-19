@@ -144,5 +144,5 @@ module.exports = {
   removeProduct,
   addToWishList,
   rateProduct,
-  uploadImages,
+  uploadImages
 };

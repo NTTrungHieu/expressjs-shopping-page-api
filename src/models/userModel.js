@@ -31,20 +31,6 @@ var userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    Cart: {
-      Products: [
-        {
-          Product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-          Quantity: Number,
-          Color: String,
-        },
-      ],
-      CartTotal: Number,
-      TotalAfterDiscount: Number,
-      AppliedCoupon: {
-        type: mongoose.Schema.Types.ObjectId, ref: "Coupon"
-      }
-    },
     Address: String,
     WishList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     IsBlocked: {
@@ -61,13 +47,16 @@ var userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual('FullName').
-  get(function() { return `${this.FirstName} ${this.LastName}`; }).
-  set(function(v) {
+userSchema
+  .virtual("FullName")
+  .get(function () {
+    return `${this.FirstName} ${this.LastName}`;
+  })
+  .set(function (v) {
     // `v` is the value being set, so use the value to set
     // `FirstName` and `LastName`.
-    const FirstName = v.substring(0, v.indexOf(' '));
-    const LastName = v.substring(v.indexOf(' ') + 1);
+    const FirstName = v.substring(0, v.indexOf(" "));
+    const LastName = v.substring(v.indexOf(" ") + 1);
     this.set({ FirstName, LastName });
   });
 
@@ -81,13 +70,16 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.Password);
 };
 
-userSchema.methods.createPasswordResetToken = async function(){
+userSchema.methods.createPasswordResetToken = async function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
-  this.PasswordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.PasswordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
   const TEN_MINUTES = 10 * 60 * 1000;
   this.PasswordResetExpires = Date.now() + TEN_MINUTES;
   return resetToken;
-}
+};
 
 const User = mongoose.model("User", userSchema);
 //Export the model

@@ -5,6 +5,8 @@ const { validateMongoId } = require("../utils/validate");
 const jwt = require("jsonwebtoken");
 const { sendEmail } = require("./emailController");
 const crypto = require("crypto");
+const Cart = require("../models/cartModel");
+const Product = require("../models/productModel");
 
 const createUser = asyncHandler(async (req, res) => {
   const findEmail = await User.findOne({ Email: req.body.Email });
@@ -174,7 +176,7 @@ const getWishlist = asyncHandler(async (req, res) => {
   const id = req.user._id;
   const user = await User.findById(id).populate("WishList");
   const wishlist = user.WishList;
-  res.json({wishlist});
+  res.json({ wishlist });
 });
 
 module.exports = {

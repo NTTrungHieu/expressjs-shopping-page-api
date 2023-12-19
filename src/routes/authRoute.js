@@ -29,9 +29,11 @@ router.get("/logout", logout);
 router.get("/refresh", handleRefreshToken);
 router.get("/all-users", getAllUser);
 router.get("/wishlist", getWishlist);
-router.delete("/:id", removeOneUser);
+
 router.put("/edit-user", updateUser);
 router.put("/password", updatePassword);
+
+router.delete("/:id", removeOneUser);
 
 // must be admin
 router.use(isAdmin);
