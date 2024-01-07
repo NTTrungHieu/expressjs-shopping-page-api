@@ -19,11 +19,13 @@ const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const cors = require("cors");
 
 // connect database
 dbConnect();
 
 // Middlewares
+app.use(cors());
 app.use(morgan("common"));
 app.use(helmet());
 app.use(bodyParser.json());
