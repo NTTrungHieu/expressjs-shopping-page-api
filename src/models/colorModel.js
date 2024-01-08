@@ -7,6 +7,10 @@ var colorSchema = new mongoose.Schema(
       type: String,
       unique: true,
       required: true, 
+    },
+    Value: {
+      type: String,
+      required: true, 
     }
   },
   {
