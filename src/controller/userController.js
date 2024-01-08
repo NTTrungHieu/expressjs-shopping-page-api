@@ -92,6 +92,11 @@ const getOneUser = asyncHandler(async (req, res) => {
   res.json({ user });
 });
 
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = req.user;
+  res.json({ user });
+});
+
 const removeOneUser = asyncHandler(async (req, res) => {
   let id = validateMongoId(req.params.id);
   const removedUser = await User.findByIdAndDelete(id);
@@ -184,6 +189,7 @@ module.exports = {
   loginUser,
   getAllUser,
   getOneUser,
+  getUserProfile,
   removeOneUser,
   updateUser,
   blockUser,
